@@ -7,9 +7,9 @@ def create_graph():
     G.add_nodes_from(range(1,101))
     return G
 
-def visualize(G,labeldict,nsize,color):
+def visualize(G,labeldict,nsize,color,t):
     nx.draw(G,labels=labeldict,node_size=nsize, node_color=color)
-    plt.show()
+    plt.savefig('evolution_'+str(t)+'.png')
 
 def assign_bmi(G):
     for each in G.nodes():
@@ -82,7 +82,7 @@ def homophily(G):
         for v in pnodes:
             if(u!=v):
                 diff=abs(G.node[u]['name']-G.node[v]['name'])
-                p=float(1)/(diff+1000)
+                p=float(1)/(diff+5000)
                 r=random.uniform(0,1)
                 if(r<p):
                     G.add_edge(u,v)
@@ -112,12 +112,26 @@ def closure(G):
         if(r<p):
             G.add_edge(u,v)
 
+def change_bmi(G):
+    f_nodes=get_foci_nodes()
+    for each in f_nodes:
+        if(G.node[each]['name']=='Eat-Out'):
+            for each1 in G.neighbors(each):
+                if(G.node[each1]['name']!=40):
+                    G.node[each1]['name']+=1
+        elif(G.node[each]['name']=='Gym'):
+            for each1 in G.neighbors(each):
+                if(G.node[each1]['name']!=15):
+                    G.node[each1]['name']-=1
+                    
 G=create_graph()
 assign_bmi(G)
 add_foci_nodes(G)
 labeldict=get_labels(G)
 add_foci_edges()
-homophily(G)
-closure(G)
-visualize(G,labeldict,get_size(G),get_colors(G))
-
+for t in range(5):
+    homophily(G)
+    closure(G)
+    change_bmi(G)
+    visualize(G,labeldict,get_size(G),get_colors(G),t)
+    
