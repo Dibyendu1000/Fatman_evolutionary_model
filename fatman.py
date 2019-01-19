@@ -82,7 +82,7 @@ def homophily(G):
         for v in pnodes:
             if(u!=v):
                 diff=abs(G.node[u]['name']-G.node[v]['name'])
-                p=float(1)/(diff+5000)
+                p=float(1)/(diff+10000)
                 r=random.uniform(0,1)
                 if(r<p):
                     G.add_edge(u,v)
