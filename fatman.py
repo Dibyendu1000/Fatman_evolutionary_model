@@ -34,7 +34,7 @@ def get_size(G):
 def add_foci_nodes(G):
     n=G.number_of_nodes()
     i=n+1
-    foci_nodes=['gym','eatout','movie_club','karate_club','yoga_club']
+    foci_nodes=['Gym','Eat-Out','Movie Club','Karate Club','Yoga Club']
     for j in range(0,5):
         G.add_node(i)
         G.node[i]['name']=foci_nodes[j]
@@ -82,12 +82,35 @@ def homophily(G):
         for v in pnodes:
             if(u!=v):
                 diff=abs(G.node[u]['name']-G.node[v]['name'])
-                p=float(1)/(diff+5000)
+                p=float(1)/(diff+1000)
                 r=random.uniform(0,1)
                 if(r<p):
                     G.add_edge(u,v)
-                
+                    
+def cmn(u,v,G):
+    nu=set(G.neighbors(u))
+    nv=set(G.neighbors(v))
+    return len(nu & nv)
     
+def closure(G):
+    array1=[]
+    for u in G.nodes():
+        for v in G.nodes():
+            if(u!=v and (G.node[u]['type']=='person' or G.node[v]['type']=='person')):
+               k=cmn(u,v,G)
+               p=1-((1-0.01)**k)
+               tmp=[]
+               tmp.append(u)
+               tmp.append(v)
+               tmp.append(p)
+               array1.append(tmp)
+    for each in array1:
+        u=each[0]
+        v=each[1]
+        p=each[2]
+        r=random.uniform(0,1)
+        if(r<p):
+            G.add_edge(u,v)
 
 G=create_graph()
 assign_bmi(G)
@@ -95,5 +118,6 @@ add_foci_nodes(G)
 labeldict=get_labels(G)
 add_foci_edges()
 homophily(G)
+closure(G)
 visualize(G,labeldict,get_size(G),get_colors(G))
 
