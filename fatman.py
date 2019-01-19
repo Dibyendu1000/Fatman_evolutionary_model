@@ -45,7 +45,12 @@ def get_colors(G):
     c=[]
     for each in G.nodes():
         if (G.node[each]['type']=='person'):
-            c.append('blue')
+            if(G.node[each]['name']==15):
+                c.append('green')
+            elif(G.node[each]['name']==40):
+                c.append('yellow')
+            else:
+                c.append('blue')
         else:
             c.append('red')
     return c
@@ -70,15 +75,25 @@ def add_foci_edges():
     for each in people_nodes:
         r=random.choice(foci_nodes)
         G.add_edge(each,r)
-    
-        
+
+def homophily(G):
+    pnodes=get_person_nodes()
+    for u in pnodes:
+        for v in pnodes:
+            if(u!=v):
+                diff=abs(G.node[u]['name']-G.node[v]['name'])
+                p=float(1)/(diff+5000)
+                r=random.uniform(0,1)
+                if(r<p):
+                    G.add_edge(u,v)
+                
     
 
 G=create_graph()
 assign_bmi(G)
 add_foci_nodes(G)
-add_foci_edges()
 labeldict=get_labels(G)
+add_foci_edges()
+homophily(G)
 visualize(G,labeldict,get_size(G),get_colors(G))
-assign_bmi(G)
 
